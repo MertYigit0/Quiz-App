@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         /// Veritabanı
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        /// Soruları ve seçenekleri al
+        //// Soruları ve seçenekleri al
         String[] columns = {"question_text", "option1", "option2", "option3", "option4"};
         Cursor cursor = db.query("Questions", columns, null, null, null, null, null);
         if (cursor.moveToPosition(questionIndex)) {
