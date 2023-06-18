@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showQuestion(int questionIndex) {
-        // Veritabanı
+        /// Veritabanı
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         /// Soruları ve seçenekleri al
