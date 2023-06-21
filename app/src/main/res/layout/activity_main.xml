@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FAFAFA"
     tools:context=".MainActivity">
 
     <Button
@@ -80,5 +81,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.023" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="105dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="100dp"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:srcCompat="@drawable/classic5050"
+        tools:layout_editor_absoluteY="14dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

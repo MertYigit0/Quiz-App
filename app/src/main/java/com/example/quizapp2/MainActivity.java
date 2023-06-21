@@ -1,12 +1,15 @@
 package com.example.quizapp2;
 
 import android.annotation.SuppressLint;
+import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.media.AudioManager;
@@ -14,11 +17,16 @@ import android.media.SoundPool;
 import com.example.quizapp2.QuizDatabaseHelper;
 import com.example.quizapp2.R;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
     private TextView textView2;
     private Button button1, button2, button3 ,button4;
+    private ImageButton imageButton;
 
     private int currentQuestionIndex = 0; // Mevcut sorunun indeksi
     private int score = 0;
@@ -40,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         button2 = findViewById(R.id.button2);
         button3 = findViewById(R.id.button3);
         button4 = findViewById(R.id.button4);
+        imageButton = findViewById(R.id.imageButton);
 
         // Veritabanı bağlantısı oluştur
         dbHelper = new QuizDatabaseHelper(this);
@@ -48,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
         button2.setOnClickListener(view -> checkAnswer(2));
         button3.setOnClickListener(view -> checkAnswer(3));
         button4.setOnClickListener(view -> checkAnswer(4));
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideIncorrectOptions();
+            }
+        });
 
         // İlk soruyu ekrana göster
         showQuestion(currentQuestionIndex);
@@ -71,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         String[] columns = {"answer"};
         Cursor cursor = db.query("Answers", columns, null, null, null, null, null);
         if (cursor.moveToPosition(currentQuestionIndex)) {
-            @SuppressLint("Range") String correctAnswer = cursor.getString(cursor.getColumnIndex("answer"));
+            @SuppressLint("Range")  String correctAnswer = cursor.getString(cursor.getColumnIndex("answer"));
 
             // Seçilen seçeneği kontrol et
             String selectedOptionText = "";
@@ -119,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Puanı artır
                 score += 10;
-                textView2.setText(String.valueOf(score));
+                textView2.setText("SCORE : " + String.valueOf(score));
             }
         }
 
@@ -129,6 +144,8 @@ public class MainActivity extends AppCompatActivity {
             showQuestion(currentQuestionIndex);
             resetButtonColors();
         }, 1500);
+        // Tüm butonların görünürlüğünü yeniden ayarla
+
 
         // Cursor ve veritabanı kapatma
         cursor.close();
@@ -149,6 +166,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showQuestion(int questionIndex) {
+        button1.setVisibility(View.VISIBLE);
+        button2.setVisibility(View.VISIBLE);
+        button3.setVisibility(View.VISIBLE);
+        button4.setVisibility(View.VISIBLE);
         /// Veritabanı
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -171,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Puanı güncelle (yalnızca doğru cevaplarda)
 
-            textView2.setText(String.valueOf(score));
+            textView2.setText("SCORE : "+String.valueOf(score));
         }
 
         // Cursor ve veritabanı kapatma
@@ -198,4 +219,69 @@ public class MainActivity extends AppCompatActivity {
         soundPool = null;
 
     }
+
+
+
+
+    private void hideIncorrectOptions() {
+        // Veritabanı
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        // Doğru cevabı al
+        String[] columns = {"answer"};
+        Cursor cursor = db.query("Answers", columns, null, null, null, null, null);
+        if (cursor.moveToPosition(currentQuestionIndex)) {
+            String correctAnswer = cursor.getString(cursor.getColumnIndex("answer"));
+
+            // Diğer seçenekleri al
+            String[] options = {button1.getText().toString(), button2.getText().toString(), button3.getText().toString(), button4.getText().toString()};
+
+            // Doğru cevabın indeksini bul
+            int correctOptionIndex = -1;
+            for (int i = 0; i < options.length; i++) {
+                if (options[i].equals(correctAnswer)) {
+                    correctOptionIndex = i;
+                    break;
+                }
+            }
+
+            // Yanlış seçenekleri gizle
+            List<Integer> hiddenOptionIndices = new ArrayList<>();
+            Random random = new Random();
+
+            while (hiddenOptionIndices.size() < 2) {
+                int randomIndex = random.nextInt(options.length);
+
+                if (randomIndex != correctOptionIndex && !hiddenOptionIndices.contains(randomIndex)) {
+                    hiddenOptionIndices.add(randomIndex);
+                    hideOptionByIndex(randomIndex);
+                }
+            }
+        }
+
+        // Cursor ve veritabanı kapatma
+        cursor.close();
+        db.close();
+    }
+
+    private void hideOptionByIndex(int index) {
+        switch (index) {
+            case 0:
+                button1.setVisibility(View.INVISIBLE);
+                break;
+            case 1:
+                button2.setVisibility(View.INVISIBLE);
+                break;
+            case 2:
+                button3.setVisibility(View.INVISIBLE);
+                break;
+            case 3:
+                button4.setVisibility(View.INVISIBLE);
+                break;
+        }
+    }
+
+
+
+
 }
