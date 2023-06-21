@@ -8,9 +8,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
+import android.media.AudioManager;
+import android.media.SoundPool;
 import com.example.quizapp2.QuizDatabaseHelper;
 import com.example.quizapp2.R;
 
@@ -18,16 +18,15 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
     private TextView textView2;
-    private Button button1;
-    private Button button2;
-    private Button button3;
-    private Button button4;
+    private Button button1, button2, button3 ,button4;
 
     private int currentQuestionIndex = 0; // Mevcut sorunun indeksi
-
     private int score = 0;
-
     private QuizDatabaseHelper dbHelper;
+
+    private SoundPool soundPool;
+    private int soundID , soundID2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +49,18 @@ public class MainActivity extends AppCompatActivity {
         button3.setOnClickListener(view -> checkAnswer(3));
         button4.setOnClickListener(view -> checkAnswer(4));
 
-        showQuestion(currentQuestionIndex); // İlk soruyu ekrana göster
+        // İlk soruyu ekrana göster
+        showQuestion(currentQuestionIndex);
+
+
+        // SoundPool oluştur
+        soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+
+        // Ses dosyasını yükle
+        soundID = soundPool.load(this, R.raw.correctansweraound, 1);
+        soundID2 = soundPool.load(this, R.raw.wronganswersound, 1);
+
+
     }
 
     private void checkAnswer(int selectedOption) {
@@ -94,11 +104,16 @@ public class MainActivity extends AppCompatActivity {
             if (!correctAnswer.equals(selectedOptionText)) {
                 selectedButton.setBackgroundColor(Color.RED);
 
+                //ses efekti
+                soundPool.play(soundID2, 1.0f, 1.0f, 1, 0, 1.0f);
+
                 // Doğru olan seçeneği yeşil renge dönüştür
                 if (correctButton != null) {
                     correctButton.setBackgroundColor(Color.GREEN);
                 }
             } else {
+                //ses efekti
+                soundPool.play(soundID, 1.0f, 1.0f, 1, 0, 1.0f);
                 // Doğru cevap
                 selectedButton.setBackgroundColor(Color.GREEN);
 
@@ -113,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             showQuestion(currentQuestionIndex);
             resetButtonColors();
-        }, 1000);
+        }, 1500);
 
         // Cursor ve veritabanı kapatma
         cursor.close();
@@ -178,5 +193,9 @@ public class MainActivity extends AppCompatActivity {
         if (dbHelper != null) {
             dbHelper.close();
         }
+
+        soundPool.release();
+        soundPool = null;
+
     }
 }
