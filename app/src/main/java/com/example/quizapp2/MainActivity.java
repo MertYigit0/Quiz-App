@@ -1,17 +1,22 @@
 package com.example.quizapp2;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Intent;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.app.AlertDialog;
+
 import androidx.appcompat.app.AppCompatActivity;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -38,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     public      int questionNumber = 1;
 
     private ProgressBar progressBar ;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private void checkAnswer(int selectedOption) {
         // Veritabanı
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -124,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Yanlış cevap
             if (!correctAnswer.equals(selectedOptionText)) {
+                assert selectedButton != null;
                 selectedButton.setBackgroundColor(Color.RED);
 
                 //ses efekti
@@ -137,11 +146,12 @@ public class MainActivity extends AppCompatActivity {
                 //ses efekti
                 soundPool.play(soundID, 1.0f, 1.0f, 1, 0, 1.0f);
                 // Doğru cevap
+                assert selectedButton != null;
                 selectedButton.setBackgroundColor(Color.GREEN);
 
                 // Puanı artır
                 score += 10;
-                textView2.setText("SCORE : " + String.valueOf(score));
+                textView2.setText("SCORE : " + score);
             }
         }
 
@@ -181,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
+    @SuppressLint("SetTextI18n")
     private void showQuestion(int questionIndex) {
         button1.setVisibility(View.VISIBLE);
         button2.setVisibility(View.VISIBLE);
@@ -208,7 +219,11 @@ public class MainActivity extends AppCompatActivity {
 
             // Puanı güncelle (yalnızca doğru cevaplarda)
 
-            textView2.setText("SCORE : "+String.valueOf(score));
+            textView2.setText("SCORE : "+ score);
+        }
+
+        if(!cursor.moveToPosition(questionIndex)){
+            showScoreDialog(score);
         }
 
         // Cursor ve veritabanı kapatma
@@ -296,6 +311,52 @@ public class MainActivity extends AppCompatActivity {
                 button4.setVisibility(View.INVISIBLE);
                 break;
         }
+    }
+    // Soruların bitmesi durumunda AlertDialog oluşturma
+    private void showScoreDialog(int score) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.score_dialog, null);
+
+        TextView congratsTextView = dialogView.findViewById(R.id.congratsTextView);
+        TextView scoreTextView = dialogView.findViewById(R.id.scoreTextView);
+        Button restartButton = dialogView.findViewById(R.id.restartButton);
+        Button exitButton = dialogView.findViewById(R.id.exitButton);
+
+
+        if (score >= 200) {
+            congratsTextView.setText("Fantastic! Congrats!");
+        } else if (score >= 100) {
+            congratsTextView.setText("Good job! Go on!");
+        } else {
+            congratsTextView.setText("You should work harder!");
+        }
+
+        scoreTextView.setText("Your Score: " + score);
+
+        builder.setView(dialogView);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCancelable(false); // Prevent the dialog from being canceled by clicking outside
+        alertDialog.show();
+        // Yeniden başlatma butonuna tıklanma olayı
+        restartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                alertDialog.dismiss(); // Dismiss the AlertDialog
+            }
+        });
+
+        // Çıkış butonuna tıklanma olayı
+        exitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish(); // Close the application
+            }
+        });
+
+
     }
 
 
