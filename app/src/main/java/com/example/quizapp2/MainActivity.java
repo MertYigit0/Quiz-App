@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SoundPool soundPool;
     private int soundID , soundID2;
-
+    public      int questionNumber = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 hideIncorrectOptions();
+                imageButton.setEnabled(false);
             }
         });
 
@@ -74,7 +75,9 @@ public class MainActivity extends AppCompatActivity {
         // Ses dosyasını yükle
         soundID = soundPool.load(this, R.raw.correctansweraound, 1);
         soundID2 = soundPool.load(this, R.raw.wronganswersound, 1);
-
+        //show question number
+        String questionCountText = getString(R.string.question_number, questionNumber);
+        setTitle(questionCountText);
 
     }
 
@@ -141,6 +144,9 @@ public class MainActivity extends AppCompatActivity {
         // Bir sonraki soruyu göster
         currentQuestionIndex++;
         new Handler().postDelayed(() -> {
+            questionNumber += 1;
+            String questionCountText = getString(R.string.question_number, questionNumber);
+            setTitle(questionCountText);
             showQuestion(currentQuestionIndex);
             resetButtonColors();
         }, 1500);
@@ -200,11 +206,12 @@ public class MainActivity extends AppCompatActivity {
         db.close();
     }
 
+    String  buttonColor = "#9C27B0";
     private void resetButtonColors() {
-        button1.setBackgroundColor(Color.parseColor("#A020F0"));
-        button2.setBackgroundColor(Color.parseColor("#A020F0"));
-        button3.setBackgroundColor(Color.parseColor("#A020F0"));
-        button4.setBackgroundColor(Color.parseColor("#A020F0"));
+        button1.setBackgroundColor(Color.parseColor(buttonColor));
+        button2.setBackgroundColor(Color.parseColor(buttonColor));
+        button3.setBackgroundColor(Color.parseColor(buttonColor));
+        button4.setBackgroundColor(Color.parseColor(buttonColor));
     }
 
     @Override
@@ -226,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
     private void hideIncorrectOptions() {
         // Veritabanı
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-
+        imageButton.setImageResource(R.drawable.icon50_2);
         // Doğru cevabı al
         String[] columns = {"answer"};
         Cursor cursor = db.query("Answers", columns, null, null, null, null, null);

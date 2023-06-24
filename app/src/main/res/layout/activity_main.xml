@@ -13,6 +13,7 @@
         android:layout_height="80dp"
         android:layout_marginBottom="16dp"
         android:text="Button 4"
+        android:background="@color/myButtonColor"
         app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,6 +25,7 @@
         android:layout_height="80dp"
         android:layout_marginBottom="16dp"
         android:text="Button 3"
+        android:background="@color/myButtonColor"
         app:layout_constraintBottom_toTopOf="@+id/button4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,6 +37,7 @@
         android:layout_height="80dp"
         android:layout_marginBottom="16dp"
         android:text="Button 2"
+        android:background="@color/myButtonColor"
         app:layout_constraintBottom_toTopOf="@+id/button3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -46,10 +49,12 @@
         android:layout_height="80dp"
         android:layout_marginBottom="16dp"
         android:text="Button 1"
+        android:background="@color/myButtonColor"
         app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
 
     <TextView
         android:id="@+id/textView2"
@@ -87,9 +92,11 @@
         android:layout_width="105dp"
         android:layout_height="52dp"
         android:layout_marginStart="100dp"
-        android:scaleType="fitXY"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
         app:layout_constraintStart_toEndOf="@+id/textView"
-        app:srcCompat="@drawable/classic5050"
+        app:srcCompat="@drawable/icon50"
         tools:layout_editor_absoluteY="14dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

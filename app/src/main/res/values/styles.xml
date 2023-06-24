@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomAppTheme" parent="Theme.AppCompat.Light">
+        <item name="android:colorPrimary">#9C27B0</item> <!-- Üst çubuğun rengi -->
+        <item name="android:colorPrimaryDark">#9C27B0</item> <!-- Durum çubuğunun rengi -->
+        <item name="android:colorAccent">#9C27B0</item> <!-- Vurgu rengi -->
+    </style>
+</resources>
