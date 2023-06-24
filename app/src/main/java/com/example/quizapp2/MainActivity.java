@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.media.AudioManager;
@@ -36,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private int soundID , soundID2;
     public      int questionNumber = 1;
 
+    private ProgressBar progressBar ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         button3 = findViewById(R.id.button3);
         button4 = findViewById(R.id.button4);
         imageButton = findViewById(R.id.imageButton);
+        progressBar = findViewById(R.id.progressBar2);
 
         // Veritabanı bağlantısı oluştur
         dbHelper = new QuizDatabaseHelper(this);
@@ -144,9 +148,15 @@ public class MainActivity extends AppCompatActivity {
         // Bir sonraki soruyu göster
         currentQuestionIndex++;
         new Handler().postDelayed(() -> {
+
+            //soru numarasini arttir
             questionNumber += 1;
             String questionCountText = getString(R.string.question_number, questionNumber);
             setTitle(questionCountText);
+
+            //bar dolumu
+            progressBar.setProgress(questionNumber);
+
             showQuestion(currentQuestionIndex);
             resetButtonColors();
         }, 1500);
@@ -238,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
         String[] columns = {"answer"};
         Cursor cursor = db.query("Answers", columns, null, null, null, null, null);
         if (cursor.moveToPosition(currentQuestionIndex)) {
-            String correctAnswer = cursor.getString(cursor.getColumnIndex("answer"));
+            @SuppressLint("Range") String correctAnswer = cursor.getString(cursor.getColumnIndex("answer"));
 
             // Diğer seçenekleri al
             String[] options = {button1.getText().toString(), button2.getText().toString(), button3.getText().toString(), button4.getText().toString()};
